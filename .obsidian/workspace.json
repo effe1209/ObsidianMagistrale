@@ -24,7 +24,7 @@
             }
           },
           {
-            "id": "1ace55aa84bb34cd",
+            "id": "2d87abdc5cca3a0b",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -95,7 +95,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 299.5
+    "width": 299.5,
+    "collapsed": true
   },
   "right": {
     "id": "986d80a0a3d3c09a",
@@ -211,7 +212,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 279.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -234,25 +235,26 @@
       "digitalgarden:Digital Garden Publication Center": false
     }
   },
-  "active": "1ace55aa84bb34cd",
+  "active": "2d87abdc5cca3a0b",
   "lastOpenFiles": [
-    "🧠 Artificial Intelligence/🔥 Schema Slide.md",
+    "allegati/image-22.png",
+    "allegati/image-21.png",
+    "allegati/image-20.png",
+    "allegati/image-19.png",
+    "allegati/image-18.png",
+    "allegati/image-17.png",
     "Home Page.md",
+    "🧠 Artificial Intelligence/🔥 Schema Slide.md",
     "allegati/image-16.png",
     "allegati/image-15.png",
     "allegati/image-14.png",
     "allegati/image-13.png",
     "allegati/image-12.png",
-    "allegati/image-11.png",
-    "allegati/image-10.png",
-    "allegati/image-9.png",
     "🤖 Machine Learning/🤖 Machine Learning.md",
     "🤖 Machine Learning/2° Comptino - Formule.md",
     "🤖 Machine Learning/1° Compitino.md",
     "📊 Media Voti.md",
     "Apple reminders.md",
-    "allegati/image-8.png",
-    "allegati/image-7.png",
     "🔎 IR/🔎 IR.md",
     "🧠 Artificial Intelligence/🧠 Artificial Intelligence.md",
     "Senza nome.base",

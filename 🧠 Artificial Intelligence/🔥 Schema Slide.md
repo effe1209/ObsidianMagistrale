@@ -1011,3 +1011,148 @@ Anche con molte euristiche, i CSP rimangono difficili in generale (worst-case $d
 - **Processo:** Si assegna un valore a un sottoinsieme di variabili, chiamato **cutset** ($c$ variabili).
 - **Vantaggio:** Se il grafo risultante (dopo aver rimosso e assegnato il cutset) può essere trasformato in un albero, si può verificare rapidamente se è risolvibile.
 - **Complessità:** $O(d^c (n-c) d^2)$. L'efficacia dipende dalla dimensione $c$ del _cutset_.
+
+# 5 Games
+> **Competitive Game** -> Ricerca contraddittoria (*adversarial search*)
+> - Giocatori fanno a turno
+> - I giocatori hanno goal opposti, in contrasto
+> - Somma zero -> uno vince l'altro perde
+> - **Perfettamente informato -> fully observable**
+
+- Stato iniziale -> $S_0$
+- $\text{TO-MOVE}(s)$ -> Mossa per spostarsi nello stato $s$
+- $\text{ACTIONS}(s)$ -> mosse legali per lo stato $s$
+- $\text{RESULT}(s,\ a)$ -> dopo lo spostamento (transition model) il risultato è il nuovo stato
+- $\text{IS-TERMINAL}(s)$ -> il gioco è finito o no
+- $\text{UTILITY}(s;\ p)$ -> Funzione di utilità - payoff ottenuta su uno stato terminale $s$ dal giocatore $p$ -> ossia è lo stato finale
+
+![[image-17.png|559x174]]
+
+## 5.1 Game Tree -> Min-Max Problem
+> Stesse proprietà della ricerca ad albero 
+> - Può essere infinita se lo spazio degli stati è infinito
+> - Può essere infinito se lo spazio degli stati è finito ma permette ripetizioni degli stati (posizioni)
+
+Il grafico dello spazio degli stati ha i nodi che rappresentano gli stati e gli archi che rappresentano le possibili azioni
+- Lo stesso stato può essere raggiunto da più direzioni - *path*
+- The game tree è *sovrapposto* al grafico -> nel gioco la radice è la posizione di partenza
+
+Non c'è speranza di costruire l'intero game tree per qualsiasi gioco anche di dimensione ragionevole
+-  $< 9!$ states for tictactoe $≈ 360 000$ states -> insostenibile
+![[image-18.png|299x242]]
+
+### 5.1.1 MIN - MAX
+> La strategia per ogni giocatore è un *piano condizionato* (**conditional plan**)
+> - *Si può applicare a qualsiasi gioco deterministico con informazione perfetta*
+> - Cosa fa MAX se MIN fa qualcosa?
+
+
+Se il gioco ha solo come risultato win/lose
+- Allora abbiamo una ricerca in un ambiente non deterministico
+- Le mosse dell'avversario sono modellate come una distribuzione di probabilità
+- Win=goal, lose = not goal
+- **AND-OR albero di ricerca**
+
+Se il risultato ha più valori -> **minmax**
+- È perfetto per giochi deterministici e con informazioni perfette
+
+![[image-21.png|551x150]]
+![[image-19.png|551x306]]
+
+#### Minmax Value
+Una volta ottenuto il valore minimo massimo per ogni nodo, puoi recuperare la strategia ottimale
+
+Nelle foglie (nodi terminali) -> $\text{MINIMAX}(s) = \text{UTILITY}(s;\ p)$
+- Il valore di utility -> ossia valore del risultato finale
+
+Un nodo intermedio, non terminale -> $\text{MINIMAX}(s) =$ il valore dell'utility **per MAX**
+- Ossia il valore **MINIMAX(s)** rappresenta il **valore di utilità garantito per MAX** se entrambi i giocatori (MAX e MIN) giocano in modo ottimale da quel nodo in poi.
+- È il miglior risultato che MAX può ottenere partendo da $s$, considerando che MIN cercherà di minimizzare il punteggio di MAX.
+
+$$
+\text{MINIMAX}(s)=\max_{𝑎∈\text{𝐴𝐶𝑇𝐼𝑂𝑁𝑆}(𝑠)}\ \text{MINIMAX}(\text{𝑅𝐸𝑆𝑈𝐿𝑇}(𝑠,\ 𝑎 )) ,\ \text{TO-MOVE}(s) = \text{MAX}
+$$
+$$
+\text{MINIMAX}(s)=\max_{𝑎∈\text{𝐴𝐶𝑇𝐼𝑂𝑁𝑆}(𝑠)}\ \text{MINIMAX}(\text{𝑅𝐸𝑆𝑈𝐿𝑇}(𝑠,\ 𝑎 )) ,\ \text{TO-MOVE}(s) = \text{MIN}
+$$
+- MAX sceglie l'opzione che massimizza MINIMAX
+	- Il punteggio di MAX dipende dalle mosse di min infatti come vediamo nella figura nel turno di MAX (root) il valore è 3 perchè considera che min faccia la scelta migliore e quindi MAX deve scegliere tra 3 e 2 che sono i valori minimi quando tocca a MIN
+- MIN sceglie l'opzione che minimizza MINIMAX
+	- Dato che ha l'obbiettivo opposto
+
+> Utilizzando l'algoritmo Minimax:
+> 1. **Esegui una ricerca in profondità (depth-first search) dalla radice** per trovare tutti gli stati terminali (foglie)
+> 2. **Ottieni l'utilità delle foglie** (i valori numerici associati ai nodi terminali).
+> 3. **Ripercorri all'indietro (backtrack) per calcolare il valore Minimax di tutti i nodi intermedi**:
+    - Se il nodo genitore è un nodo **MIN**, prendi il valore **minimo** tra i valori Minimax dei figli.
+    - Se il nodo genitore è un nodo **MAX**, prendi il valore **massimo** tra i valori Minimax dei figli.
+
+ES:
+Immagina un gioco dove MAX e MIN alternano mosse:
+- MAX parte dalla radice e sceglie tra $A_1$​, $A_2$​, $A_3$​.
+- Se sceglie $A_1$​, vede 3, 12, 8, ma sa che MIN minimizzerà a 3.
+- Sceglie $A_1$ perché 3 è il massimo tra 3, 2, e 2 (valori di $A_1$​, $A_2$​, $A_3$​)
+
+
+> [!important] MinMax Search
+> - **Completa** -> **SI** con stati finiti
+> - **Ottimale** -> **SI**, contro un giocatore perfetto
+> - **Complessità in Tempo** -> $O(b^m)$
+> - **Complessità Spazio** -> $O(bm)$ = Depth-First
+
+#### Giocare contro un Avversario Sub-Ottimale
+> Minimax ha dei leggeri inconvenienti
+
+A seconda del giocatore può fare mosse perfette oppure come nella maggior parte dei casi sbagliare e quindi non avere un gioco perfetto.
+Se io gioco contro di lui e se la posizione è un pareggio con un gioco perfetto, potresti voler fare una mossa complicata, ma non ottimale per provare a prendere la vittoria:
+- Se rispondo con l'unica mossa corretta nella posizione: perdi (p=1%)
+- Se rispondo con alcune delle mosse sbagliate: vinci (p=85%)
+- Se rispondo con il resto delle mosse (non ottime, ne pessime): è un pareggio (p=14%)
+
+Questa è la differenza tra le cosiddette "mosse del computer" e le "mosse umane"
+- Ci sono programmi per computer che cercano di imitare il modo in cui gli esseri umani si comportano contro gli avversari non ottimali
+
+##### Complessità
+- Branching factor in chess = 35
+- Average game length = 40 moves = 80 ply
+- Given the complexity of DFS, you get 3580 states to visit
+> Per ridurlo abbiamo bisogno del **PRUNING**
+
+### 5.1.2 $\alpha$ - $\beta$ pruning
+> Pota i rami che non portano a nessuna mossa migliore né per MAX né per MIN
+
+$\alpha$ = valore MINIMAX più grande finora
+$\beta$ = valore MINIMAX più piccolo finora
+$[\alpha,\ \beta]$
+Iniziale = $[-\infty,\ +\infty]$
+
+![[image-22.png]]
+
+**Regola generale**: considera un nodo con MINIMAX = V. 
+- Se un nodo della stessa profondità (MINIMAX=m') o un nodo più alto (MINIMAX=m) ha un valore MINIMAX migliore, non raggiungerai mai il nodo con MINIMAX=V: **puoi potarlo!**
+
+
+> [!question] Perchè Pruning?
+> Non ha effetto sulla soluzione
+> Con il migliore pruning possiamo ridurre la complessità a $O(b^{m/2})$
+> - Buono ma non sufficiente per problemi con grandezza ragionevole ($\sqrt b$ fattore su cui ha effetto)
+> - Il miglior pruning dipende **dall'ordine delle mosse**
+> - La generazione di mosse che consentono di potare prima l'albero porta alla migliore potatura -> faccio mosso che permettono di potare più rami
+
+La ricerca del raggio può essere utilizzata solo per considerare le mosse "top" k ogni volta, in base ad alcune funzioni di valutazione
+- Rischi di potare la mossa migliore, ovviamente.
+
+#### Strategie diverse da DFS
+- **Type A** strategy
+	- Esplorare completamente lo spazio della ricerca fino ad una profondità limitata
+	- Usare un euristica per valutare utility per i nodi alla profondità finale
+- **Type B** strategy
+	- Non esplorare le mosse che sembrano pessime basandosi su una data euristica
+	- Segui le mosse più promettenti dove possibile -> possibilmente fino alla fine del gioco
+
+Type A funziona se il fattore di brenching (è il numero massimo di figli che un nodo può avere in un albero) non è molto largo, Type B è utile quando il fattore di brenching è molto alto.
+
+Le euristiche vengono **apprese** o sfruttate come una combinazione ponderata di caratteristiche di gioco
+**Effetto orizzonte**: l'euristica valuta la posizione come buona, ma esplorando un livello di profondità in più potrebbe cambiare completamente la valutazione.
+
+### 5.1.3 MCTS - Monte-Carlo Tree Search
