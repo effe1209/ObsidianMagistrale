@@ -1558,3 +1558,72 @@ Questo è il passaggio cruciale che permette all'algoritmo di "imparare" la form
 - **Controllo del Passo ($\sigma$):** La dimensione del passo si adatta confrontando la lunghezza del cammino percorso con quella di una camminata casuale (Path Length Control).
 
 # 7 Artificial Life
+> Evolution of Complexity -> da cellule base a organismi più complessi
+
+**Tierra** -> Programmi software (creature) che competono per il tempo della CPU e vivono nello spazio RAM
+**Avida** -> Il software ha risorse dedicate, può acquisirne di più eseguendo attività (ad esempio la moltiplicazione binaria)
+
+> Fitness -> vivere abbastanza a lungo
+
+- **Sensibilità alle condizioni iniziali:** Una variazione infinitesimale all'inizio porta a risultati finali completamente diversi (Caos).
+- **Determinismo vs Prevedibilità:** Il sistema segue regole fisse, ma è **imprevedibile** perché è impossibile conoscere lo stato iniziale con precisione perfetta.
+- **Conclusione:** Non possiamo calcolare il futuro con una formula, l'unico modo è **eseguire la simulazione** passo dopo passo.
+
+### 7.1.1 Cellular Automata
+> Modello matematico semplice di **self-replication** (riproduzione autonoma)
+
+- La descrizione del sistema viene utilizzata per replicare il sistema e per costruirlo
+	- Questo è stato concepito prima che il meccanismo del DNA fosse pienamente compreso / scoperto
+- **Spazio Discreto** -> multi-dimensional vettore di celle e **tempo discreto**
+- 1 variabile discreta per cella
+- Regole di Aggiornamento dettano le dinamiche
+	- Aggiornamenti sincroni basati su ogni celle dei vicini
+- Gestione dei Confine
+	- Celle possono rimanere costanti e lo spazio può essere sovrapposto -> toroidal structure
+	- Anche il quartiere può essere definito in modo diverso
+
+#### Funzionamento base di un **Automa Cellulare Elementare (1D)** - ECA
+- **Struttura:** Una fila di celle che possono essere solo **0** o **1** (bianco o nero).
+- **Regola di Aggiornamento:** Lo stato futuro di una cella dipende solo da **se stessa e dai suoi due vicini** (sinistra e destra) al tempo precedente (sj−1,sj,sj+1).
+- **La "Regola":** I disegni in basso (111 → 0, 110 → 1, ecc.) definiscono la "legge fisica" di quel mondo. Leggendo i risultati in basso come un numero binario (es. 01011010), si ottiene il numero della Regola (es. Rule 30, Rule 90) che determina se il sistema genererà ordine, caos o strutture frattali.
+
+Assunzioni:
+- Uno stato iniziale 0-state deve essere mappato a 0 -> L'ultima cifra deve essere 0
+- Riflessione Simmetrica -> isotropia: stesso comportamento che riguarda la direzione
+	- 110 -> 011, 100 -> 001
+- Regole ammissibili del modulo $𝑏_1𝑏_2𝑏_3𝑏_4𝑏_2𝑏_5𝑏_40$ → 32 possible 
+
+![[image-28.png|488x251]]
+![[image-29.png|493x245]]
+
+**Evoluzione**
+- Rumore bianco come stato iniziale
+	- I valori delle celle non sono correlati tra loro
+	- Un parametro p descrive l'intero stato
+- Sistema ordinato di conseguenza
+	- Più parametri per descriverlo
+- Proprietà di auto-organizzazione
+	- Un altro segno distintivo di sistemi non lineari complessi
+- 300 fasi temporali di evoluzione con regola 126
+- Stato iniziale casuale
+	- $P(x=1) = 0,5$
+- È anche possibile lo studio delle proprietà globali
+	- Teoria classica dei sistemi dinamici
+
+##### Regole in ECA
+1. Type I
+	- Evoluzione verso gli stati statici
+2. Type II
+	- Evoluzione alla struttura periodica
+3. Type III
+	- L'evoluzione a schemi caotici -> porta alla (pseudo) casualità
+4. Type IV
+	- Evoluzione a modelli complessi -> limite del caos
+
+##### CA con k Stati per Cella
+> Formazione di membrane protettive che proteggono il loro contenuto dagli effetti esterni
+> Quando due membrane si scontrano possono distruggersi a vicenda
+
+![[image-30.png|326x278]]
+
+## 7.2 Universal Computer
