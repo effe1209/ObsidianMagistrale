@@ -1156,3 +1156,405 @@ Le euristiche vengono **apprese** o sfruttate come una combinazione ponderata di
 **Effetto orizzonte**: l'euristica valuta la posizione come buona, ma esplorando un livello di profondità in più potrebbe cambiare completamente la valutazione.
 
 ### 5.1.3 MCTS - Monte-Carlo Tree Search
+> Utile quando il fattore di brenching è enorme, Anche con la potatura, saresti limitato a piccole profondità
+> - Utile quando non hai una funzione di valutazione buona -> anche se puoi sempre aggiungerla se ce l'hai
+
+**Rollout - Playout** (lanci)-> da un determinato stato, riproduci un intero episodio fino alla fine e ottieni l'utilità.
+In MCTS, il valore di uno stato è l'**utilità finale media** su un certo numero di lanci da quello stato
+
+**Playout Policy** -> funzione che decide quqle mossa prendere ad ogni step
+- Questa è la parte dove il reinforcement learning aiuta molto
+- La politica di lancio non è tutta la storia
+
+**Pure Monte-Carlo Search** -> dato uno stato, calcolare il suo valore effettuando $N$ rollouts
+- Nessun search tree necessario
+
+#### Passaggi di MCTS (Monte Carlo Tree Search)
+
+- **Registra la simulazione in un albero di ricerca**  
+	- All'inizio, l'albero di ricerca contiene solo lo stato iniziale.
+
+- Dato un albero di ricerca con uno stato come radice, ripeti:  
+	- **Selezione**: Dalla radice, usa la politica di selezione per scegliere un percorso verso una foglia.  
+	- **Espansione**: Usa la politica di simulazione per generare un nuovo nodo a partire dalla foglia corrente.  
+	- **Simulazione**: Esegui una rollout (simulazione completa) dal nodo appena espanso usando la politica di simulazione. L'albero di ricerca non viene aggiornato.  
+	- **Back-propagation (non quella!)**: Aggiorna il valore dei nodi nell'albero di ricerca dal nodo appena aggiunto fino alla radice, seguendo il percorso di selezione.  
+	- **Ritorno**: Scegli la mossa con il numero più alto di simulazioni (vedi più avanti).  
+	- **Esecuzione della mossa**: Esegui la mossa, ottieni il nuovo stato e ripeti i passaggi sopra.
+
+#### Politica di selezione
+- **Definizione**: Una funzione che determina quale mossa seguire in un dato albero di ricerca.  
+- **Bilanciamento**: Concilia **sfruttamento** (simulazioni da stati buoni e ben esplorati) e **esplorazione** (simulazioni da stati meno frequentati).  
+
+MCTS combina esplorazione casuale e strategia per migliorare le decisioni in giochi complessi, aggiornando l'albero solo con i risultati delle simulazioni.
+
+![[image-23.png]]
+
+#### Tempo di Esplorazione
+$$
+\sqrt{\frac{log_N(\text{Parent}(n))}{N(n)}}
+$$
+- $N(\text{Parent}(n))\ge N(n)$
+	- Come ogni volta che visiti n visiti Parent(n)
+- $log_N(\text{Parent}(n))\le N(n)$
+	- Da un certo numero di playouts in avanti
+
+Supponiamo che Parent$(n)$ riceve 10 playouts più di $n$
+Il temine di esplorazione va a 0 quando il numero di playouts aumenta
+- non vuoi esplorare per sempre
+
+![[image-24.png|468x359]]
+
+![[image-25.png]]
+
+#### Deterministic Games
+- MCTS non richiede un euristica
+	- Puoi usarlo su tutti i giochi basta conoscere le regole 
+	- Puoi usare un euristica se ne hai una (ad esempio per migliorare la politica)
+- MCTS si basa sull'esplorazione, quindi potrebbe volerci del tempo per determinare il valore di una mossa ovviamente buona/cattiva.
+	- L'euristica può aiutare qui
+- MCTS con politica/euristica appresa raggiunge costantemente prestazioni sovrumane
+	- Chess
+
+Nota: gli approcci moderni combinano ricerca e apprendimento e altro ancora!
+#### Stochastic Games
+Nodo casuale che rappresenta tutti i possibili risultati (ad esempio, il risultato di un lancio di dadi)
+![[image-26.png|461x352]]
+
+#### Minimax Previsto
+Lo stesso di minimax, ma devi gestire anche i nodi casuali
+Il valore di un nodo casuale è il valore atteso di tutti i possibili risultati del nodo
+
+$$
+\text{ExpectedMINIMAX}(s) =\sum_r P(r) \text{𝐸𝑥𝑝𝑒𝑐𝑡𝑒𝑑𝑀𝐼𝑁𝐼𝑀𝐴𝑋}(\text{𝑅𝑒𝑠𝑢𝑙𝑡}(𝑠,\ 𝑟))
+$$
+-Puoi applicare un ragionamento simile a giochi con informazioni parziali, sia deterministici (ad esempio, scacchi ciechi) che stocastici (ad esempio, poker). 
+- **Sono preferibili aggiustamenti ad hoc**, ma non entreremo nel dettaglio.
+---
+# 6 Ottimizzazioni
+#slide8
+## 6.1 Artificial Life
+La vita artificiale cerca di capire le proprietà essenziali dei sistemi viventi sintetizzando un comportamento realistico in software, hardware e prodotti biochimici.
+- **Soft Artificial Life** -> simulazioni digitali processi e organismi viventi
+- Hard Artificial life -> implementazione hardware (soft robot). evoluzione dei controller e della morfologia ossia la struttura fisica
+- Wet Artificial life -> sintetizza sistemi viventi delle sostanze biochimiche, ossia cellule artificiali
+- **Impegno ingegneristico non necessario** -> non vogliamo necessariamente risolvere un problema con un certo margine di errore
+- Vogliamo capire come le cose funzionano e scoprire nuove cose, se qualcosa diventa anche utile meglio.
+
+### 6.1.1 Prioneria dell'Artificial Life
+> La vita artificiale slega il vincolo materiale al carbonio permettendo di studiare i principi generali senza essere legati al caso specifico (carbonio) ma analizzando in generale il fenomeno
+
+#### Origini
+La vita è un processo iterativo guidato dall'evoluzione -> avere infiniti loop è potente
+- condizione iniziale -> come la vita è nata
+- Evoluzione Biologica -> algoritmo
+	- Come la vita progredisce e diventa varia
+	- Come gli organismi moderni sono i discendenti dei loro antenati
+#### Natural Selection
+> Condizioni **necessarie e sufficienti** per l'evoluzione tramite natural selection
+
+- Tasso di riproduzione diverso
+	- Proprietà dell'ambiente che favoriscono un un certo tratto
+	- Sopravvivono gli individue che combaciano di più all'ambiente
+- Ereditarietà -> tratti che vengono passati  alla nuova generazione
+- Variazioni -> tratti differenti in una popolazione
+
+> Tratti vantaggiosi sopravvivono in una popolazione mentre gli altri spariscono -> **convergono verso una popolazione omogenea** fino alla successiva mutazione e a quelle già presenti
+
+Punti chiave dell'evoluzione:
+- Adattamento -> una caratteristica è favorita dalla selezione naturale diventa sempre più importante per un dato compito
+- Esitazione -> trovare un uso diverso per un tratto prima utilizzato per un diverso uso.
+- Diversità:
+	- Mutazioni casuali -> crea nuovi geni
+	- Ricombinazione -> cross-over, mischiare i geni
+	- Selezione naturale -> cambiata in base al fitness
+		- Fitness -> rappresenta quanto è buono ad essere trasmesso un genotipo comparato agli altri
+		- Selezione sessuale e artificiale
+	- Processi divergenti -> non collassa, ma crea novità
+#### Condizioni Iniziali e Algoritmo di evoluzione
+Bisogna approssimare le condizioni iniziali di ambiente e di popolazione composta da molti individui.
+Un sistema caotico e complesso: ogni approssimazione porta a grandi differenze negli stati futuri.
+
+**Problema di Ottimizzazione** -> partiamo già da un processo ben definito: evoluzione tramite selezione naturale.
+Possiamo simulare le condizioni necessarie e sufficienti:
+- variazione
+- Riproduzione differenze
+- Ereditarietà
+
+### 6.1.2 Skeleton of EAs
+- Inizializzazione della **popolazione** $P_0$ di **individui** con $N$ caratteristiche (features)
+	- Le caratteristiche sono espresse in un dominio specifico di linguaggio (bit-string o numeri reali)
+- **Valutazione** della **fitness** della popolazione $P_0$
+- Per ogni step $t=1,1,...$
+	- Selezione un genitore di $P_0$ in base alla fitness
+	- **Riproduzione e ricombinazione** delle caratteristiche del **figlio**
+	- Applica una mutazione delle caratteristiche (random o rate di mutazione di adattamento)
+	- **Valuta** la fitness della nuova popolazione
+	- Selezione un sottoinsieme di $K$ individui sopravvissuti prendendo $P_t$ (esempi casuali pesati dalla fitness)
+
+#### EAs -> Dettagli e Variazioni
+- Basandosi sulle regioni dove la fitness è alta -> la sfruttiamo
+	- Hill-climbing nello spazio della fitness
+- Seleziona i genitori basandosi solo sul rank relativo della fitness
+- Il numero di figli è proporzionale alla differenza tra la media e la fitness individuale -> *ossia se ha una fitness alta avrà più figli*
+- **Rate di mutazioni diversi** per ogni caratteristica individuale
+- La ricombinazione può mediare le caratteristiche o prendere il massimo/minimo
+	- La ricombinazione cross-over inserisce un punto di taglio e cambia le caratteristiche
+
+### 6.1.3 Diversi Tipi di ALGORITMI Evolutivi
+**Strategie di Evoluzione -> Basate sulla distribuzione**
+- Mutazioni random + valutazione + ricombinazione
+- Programmazione Evolutiva -> mutazione random + valutazione
+
+**Algoritmi Genetici -> Basati sulla popolazione**
+- Come input abbiamo i genotipi codificati come stringhe di bit
+- Le mutazioni sono rare e la ricombinazione è il fattore chiave
+- La fitness è rilevante anche per selzionare i genitori
+
+**Programmazione Genetica**
+- l'individuo è un set di istruzioni -> albero
+- Algoritmi genetici per codice genetico
+
+### 6.1.4 Genetic Programming
+Fenomeni tipici:
+1. Fixing Sorting -> l'AI invece di fare un ordinamento complesso sceglie la strada semplice ossia cancellare tutti gli elementi così la lista è sicuramente ordinata, questo però rende il codice inutile -> controllo: deve contenere gli stessi elementi di input
+2. L'evoluzione può portare a cheat ossia eliminare il file target, modificando l'ambiente 
+3. **Bloating** -> Le mutazioni sono casuali e distruttive. Se hai un codice perfetto di 3 righe, una mutazione probabilmente lo romperà.
+	L'evoluzione tende ad aggiungere enormi quantità di codice inutile (definito "introns" o junk code) come cicli che non fanno nulla.
+	- *FUNZIONE:* perchè aumento il codice che le mutazioni vanno ad intaccare riducendo la probabilità che vengano intaccate le parti vitali
+
+### 6.1.5 Black-box Ottimizzazioni
+1. Algoritmo di ricerca da massimizzare $f:S\to R$
+	1. $S$ è lo spazio di ricerca
+	2. Di solito: $S⊂  R^n$
+2. $f$ può essere qualsiasi funzione -> più utile se $f$ non è convessa
+3. L'unica informazione è la valutazione della funzione $f$ in un punto
+	1. I punti sono presi dallo spazio di ricerca, deve essere in grado di campionare
+	2. Non ha bisogno di altre informazioni, **no derivate** 
+4. **Metriche di Performance**
+	1. Richiede una valutazione per convergere
+	2. Valore della soluzione finale
+	3. Note -> assumiamo che il costo della valutazione è indipendente dal numero degli esempi
+
+### 6.1.6 Strategie di Evoluzione
+1. Ottimizzazione black-box **stocastica**
+2. $f$ è una funzione **continua**
+3. Inizia con un insieme di individui
+	1. Valuta gli individui
+	2. Muta e ricombina individui
+4. Individui all'inizio della simulazione $x^0\in S ⊂ R^n$
+	1. fenotipo, oggetto o **parametri di decisione**
+5. Un set di **parametri strategici** $\sigma^o$ per ogni individuo
+	1. Tasso di mutazione dei parametri decisionali
+	2. Parametri che possono evolversi
+
+> Mutazione = **aggiungere rumore casuale** (Gaussiano)
+> - Isotropic Gaussian (1 parametro -varianza) = $N(m,\sigma^2\ l)$)
+> - 1 parametro per ogni dimensione = $N(m,\ D^2)$ con $D$ diagonale
+
+Esplora uniformemente lo spazio di ricerca ossia è come fare l'assunzione minima sulla struttura di $f$
+**Mixing number  $\rho$** -> indica quanti genitori generano figli
+- I genitori sono scelti casualmente
+- $\rho=1$ -> clone
+- Selezione -> (𝜇, 𝜆)-ES e (𝜇 + 𝜆)-ES
+	- Ossia come vedremo dopo la selezione nel primo caso tra solo i figli e nel secondo la selezione dall'insieme combinato di figli e genitori
+
+Se vuoi generare $\lambda$ figli, devi scegliere $\lambda$ gruppi di $\rho$ genitori
+**Ricombinazione** -> molte possibilità
+- Ad esempio -> selezionare delle features $j$ dai genitori $i$ (random), media (multi-recombination), media pesata
+
+## 6.2 Self-adaptive ES
+> Adapting strategy parameters
+> - *ES = Evolution Strategies*
+
+### 6.2.1 (𝜇, 𝜆)-ES
+- Popolazione $X^g\in R^{\micro ,n}$, step size $\sigma^g\in R^\micro$ -> strategy parameter
+	- Uguali per tutte le features do un dato individuo -> isotopic gaussian
+- Genera $\lambda$ figli ($k=1,...,\lambda$)
+	- Seleziona parametri a caso $P^g\in R^{\rho ,n}$
+	- $\sigma^{g+1}_k =recombine(\sigma^g |P^g)e^{\epsilon_k\sim N(0,1)}$
+	- $x^{g+1}_k =recombine(P^g)+N(0,\sigma^{g+1}_k)$
+	- Valutare la fitness
+- Teniamo i meglio figli $\micro$ tra tutti i figli $\lambda$
+	- $\lambda > \micro$ iperparametro -> non viene cambiato durante l'evoluzione
+- I genitori vengono **sempre scartati**
+
+Come candidati possiamo prendere:
+- gli individui **migliori**
+- La **media** degli individui
+- La **media pesata** degli individui
+![[image-27.png|414x386]]
+
+### 6.2.2 (𝜇 + 𝜆)-ES
+> **I figli competono anche con i genitori**
+> - è meglio per spazi finiti grandi o problemi combinatori
+
+- ($1+1$)-ES fu il primo ES
+	- Seleziona un individuo tra due possibilità il genitore o il figlio
+- Preserva il migliore fino ad ora
+- Avvolte può mischiare i numeri
+	- $(\micro /\rho + \lambda)$-ES
+	- $(\micro /\rho , \lambda)$-ES
+
+#### Descrizione Algoritmo
+Questo pseudocodice descrive il funzionamento generale di una **Strategia Evolutiva** (Evolution Strategy - ES), mostra le due alternative viste prima $(\mu/\rho \stackrel{+}{,} \lambda)$.
+
+Ecco cosa fa passo dopo passo in parole semplici:
+1. Creazione dei figli -> Da un gruppo di genitori ($\mu$), l'algoritmo genera un numero maggiore di figli ($\lambda$). Per creare ogni figlio:
+    - **Marriage & Recombination:** Seleziona alcuni genitori ($\rho$) e mescola le loro informazioni (sia il codice genetico $y$ che i parametri strategici $s$).
+    - **Mutation:** Applica mutazioni casuali. Nota importante: prima muta i parametri di strategia ($s$, che controllano _quanto_ mutare) e poi usa quelli per mutare il codice genetico vero e proprio ($y$).
+    - **Fitness:** Calcola il punteggio ($F$) del nuovo figlio.
+2. Selezione dei sopravvissuti (Line 14-17) -> Alla fine del ciclo, deve decidere chi passa alla generazione successiva. Il codice mostra due modalità alternative:
+    - **$(\mu, \lambda)$ - Selezione a virgola:** I genitori vengono scartati a priori. I nuovi sopravvissuti sono scelti **solo tra i figli**. (Utile per evitare di rimanere bloccati in ottimi locali).
+    - **$(\mu + \lambda)$ - Selezione col più:** I nuovi sopravvissuti sono i migliori scelti dall'insieme unito di **genitori E figli**. (Molto elitario, preserva sempre la soluzione migliore trovata finora).
+
+In sintesi: **Genera una prole numerosa rimescolando i genitori, mutala, e poi tieni solo i migliori (o rimpiazzando i vecchi o facendoli competere).**
+
+#### Perchè Dovremmo Usare (𝜇, 𝜆)-ES se non è Elitaria
+> *ELITARIA* -> significa che la soluzione ottima trovata fino ad ora sopravvive sempre, quindi NON-ELITARIA significa che le soluzione vecchie vengono sempre scartate anche se erano le migliori
+
+Per evitare l'overfitting verso l'oggetto
+- `,`-selection -> è un esploratore migliore dello spazio di ricerca
+- `+`-selection -> è uno sfruttatore migliore dello spazio di ricerca
+
+- **Il Paradosso:** A volte, per risolvere un problema, devi **smettere di cercare direttamente l'obiettivo**.
+- **L'Esempio del Labirinto:**
+    - _La Metrica:_ Immagina che il punteggio sia la "distanza in linea d'aria dall'uscita".
+    - _L'Inganno:_ Se ti trovi vicinissimo all'uscita ma separato da un muro, il tuo punteggio è alto.
+    - _La Necessità:_ Per vincere devi allontanarti dal muro (peggiorare il punteggio momentaneamente) per aggirare l'ostacolo.
+- **Il Paesaggio di Ricerca (Landscape):**
+    - È pieno di **ottimi locali**: punti che sembrano soluzioni (punteggio alto) ma sono in realtà vicoli ciechi (come il punto davanti al muro).
+- **La Soluzione:**
+    - Poiché è difficile capire quando un problema è "ingannevole", la strategia migliore è **aumentare l'esplorazione** (fare cose diverse) invece di seguire ciecamente la metrica di ottimizzazione, accettiamo di fare un passo peggiorativo per permetterci di migliorare in seguito.
+
+#### Comparazione `,` e `+` -selection
+Cosa succede se $\micro = \lambda$, ossia il numero di figli è uguale al numero dei nodi che devo prendere, nel caso di (𝜇, 𝜆)-ES?
+- Tutti i figli sono presi
+- Non c'è selezione
+- Passi casuali nello spazio di ricerca
+Cosa succede invece in *(𝜇 + 𝜆)-ES*?
+- Non ci sono problemi la selezione continua a funzionare
+- Tieni i meglio $\micro = \lambda$ individui predi dal set formato dai figli e genitori $\micro + \lambda$
+- Qui non cambia niente dato che l'insieme dove applico la selezione è più grande dei soli figli dato che comprende anche i genitori
+
+### 6.2.3 CMA-ES - Covariance Matrix Adaptation
+> Le mutazioni seguono un matrice di covarianza **adattiva** che si aggiusta basandosi sulla forma locale del paesaggio della funzione 
+> - Come il momentum -> velocizza quando c'è una pianure e rallenta quando ci sono colline
+
+- Popolazione campionata dalla gaussiana multivariata -> $N(m^g, C^g)$
+	- $C^g$ simmetrica
+	- $\frac{n^2+n}{2}$ gradi di libertà
+- Il vettore medio è preso come soluzione candidata
+- Inizializza $C^0=I$, $m^g\in R^n$ - random
+
+#### 1 Generazione della Prole -> Sampling
+- **L'Azione:** Creiamo nuovi candidati (figli) partendo dalla distribuzione attuale. 
+- La Formula:$$x_k^{g+1} = m_g + \sigma \cdot N(0, C_g)$$
+	- **$m_g$:** Il punto centrale attuale (la media della popolazione "buona").
+	- **$\sigma$ (Sigma):** L'ampiezza del passo (step-size), quanto lontano osiamo andare.    
+    - **$N(0, C_g)$:** Il "rumore" casuale modellato dalla matrice di covarianza $C_g$ (che determina la _forma_ della ricerca, es. un cerchio o un ellisse).
+- **In sintesi:** Prendiamo il centro attuale e "spariamo" $\lambda$ figli casuali attorno ad esso.
+#### 2 Valutazione e Ordinamento -> Selection
+- **Ordinamento:** Una volta generati i figli, calcoliamo la loro fitness (punteggio).
+- **Ranking:** Li mettiamo in fila dal migliore al peggiore ($x_{1:\lambda}$ è il migliore, $x_{\lambda:\lambda}$ è il peggiore).
+
+#### 3 Aggiornamento della Media -> Recombination
+- **L'Obiettivo:** Spostare il centro della ricerca ($m_{g+1}$) verso la zona promettente trovata dai figli migliori. 
+- La Formula:$$m_{g+1} = \sum_{i=1}^{\mu} w_i \cdot x_i^{g+1}$$
+    - Si calcola la **media pesata** solo dei migliori $\mu$ figli.
+    - **$w_i$ (Pesi):** Danno più importanza ai figli migliori ($w_1 > w_2 > \dots$). La somma dei pesi è 1.
+
+#### 4 Il Concetto Chiave: Selezione Troncata -> Truncated Selection
+- **La Domanda:** Perché usiamo solo $\mu$ genitori se ne abbiamo generati $\lambda$ ($\mu < \lambda$)?
+- **Il Motivo:** È questo che crea la **pressione evolutiva**.
+    - Se usassimo _tutti_ i figli ($\mu = \lambda$) per calcolare la nuova media, il centro rimarrebbe praticamente fermo (la media del rumore casuale è zero).
+    - Scartando i peggiori e tenendo solo i migliori (Troncamento), forziamo la media a spostarsi fisicamente verso la "salita", guidando l'evoluzione.
+
+Ecco il seguito dello schema, strutturato per collegarsi direttamente ai punti precedenti (Sampling, Selection, Mean Update). Qui entriamo nel cuore matematico del CMA-ES.
+
+#### 5 Effective Sample Size ($\mu_{eff}$) - La Qualità dell'Informazione
+- **Il Concetto:** Misura quanta informazione stiamo realmente utilizzando per aggiornare la distribuzione, basandosi su come sono distribuiti i pesi $w_i$.
+    - La Formula:$$\mu_{eff} = \frac{1}{\sum_{i=1}^{\mu} w_i^2}$$
+    - **Il Range ($1 \le \mu_{eff} \le \mu$):**
+	- Se tutti i pesi sono uguali ($w_i = 1/\mu$): $\mu_{eff} = \mu$. Significa che "ascoltiamo" tutti i genitori allo stesso modo (massima informazione, ma bassa pressione selettiva).
+    - Se un peso è 1 e gli altri 0: $\mu_{eff} = 1$. Significa che tutto dipende dal singolo figlio migliore (massima selezione, rischio instabilità). 
+- **Regole Pratiche (Heuristics):**
+    - Solitamente si sceglie $\mu \approx \lambda / 2$ (si tengono metà dei figli).
+    - L'obiettivo è avere $\mu_{eff} \approx \lambda / 4$.
+    - I pesi decrescono linearmente: $w_i \propto \mu - i + 1$.
+
+#### 6 Aggiornamento della Matrice di Covarianza ($C$) - Parte I
+
+Questo è il passaggio cruciale che permette all'algoritmo di "imparare" la forma del problema (es. capire se c'è una valle stretta e allungare l'ellisse di ricerca in quella direzione).
+- L'Intuizione:
+    Vogliamo che la nuova matrice $C_{g+1}$ aumenti la probabilità di generare vettori simili a quelli che hanno avuto successo nella generazione corrente ($x_{g+1}$). Se andare a "Nord-Est" ha pagato, deformiamo la ricerca verso "Nord-Est".
+- Riscrivere l'aggiornamento della Media:
+    Possiamo vedere la nuova media non come una posizione assoluta, ma come la vecchia media più uno spostamento pesato: $$\mathbf{m}_{g+1} = \mathbf{m}_g + \sum_{i=1}^{\mu} w_i (\mathbf{x}_i^{g+1} - \mathbf{m}_g)$$
+    (Stiamo sommando i vettori differenza "successo - vecchia media")
+
+- Stima della Covarianza ($C_{\lambda}^{g+1}$):
+    Prima di aggiornare la matrice vera e propria, stimiamo la forma della distribuzione attuale basandoci sui campioni appena estratti: $$C_{\lambda}^{g+1} = \frac{1}{\lambda} \sum_{i=1}^{\lambda} (\mathbf{x}_i^{g+1} - \mathbf{m}_g)(\mathbf{x}_i^{g+1} - \mathbf{m}_g)^T$$
+    - **Concetto chiave:** Questo è uno **stimatore corretto (unbiased estimator)** di $C_g$. Significa che $E[C_{\lambda}^{g+1}] = C_g$. In parole povere: se avessimo infiniti campioni, questa formula ci ridarebbe esattamente la forma della matrice originale.
+#### 7 Stima Migliorata della Covarianza ($C_{\mu}$)
+- **L'Idea:** Invece di stimare la forma usando _tutti_ i figli (che darebbe una stima neutra/unbiased), usiamo solo i **migliori $\mu$ figli**. 
+- La Formula:$$C_{\mu}^{g+1} = \sum_{i=1}^{\mu} w_i \frac{(x_i^{g+1} - m_g)}{\sigma} \frac{(x_i^{g+1} - m_g)^T}{\sigma}$$
+- **Il Significato:**
+    - La somma ora arriva fino a $\mu$ (non $\lambda$): stiamo ignorando i figli scarsi.
+    - **Effetto:** Campionare da questa matrice $C_{\mu}$ tenderà a riprodurre i passi che hanno avuto successo in questa generazione.
+
+#### 8 Rank-$\mu$ Update (L'Aggiornamento Robusto)
+- **Il Problema:** Non possiamo buttare via la vecchia matrice $C_g$ e sostituirla con $C_{\mu}$ ogni volta (sarebbe instabile e dimenticherebbe tutto ciò che ha imparato prima).
+- **La Soluzione (Exponential Smoothing):** Uniamo la vecchia conoscenza con la nuova stima.
+- La Formula:$$C_{g+1} = (1 - c_{\mu}) C_g + c_{\mu} \frac{1}{\sigma^2} C_{\mu}^{g+1}$$
+    - **$C_g$:** La "memoria" storica delle generazioni passate.
+    - **$C_{\mu}^{g+1}$:** La "novità" imparata dai migliori figli di oggi.
+    - **$c_{\mu}$ (Learning Rate):** Un valore tra 0 e 1. Determina quanto velocemente l'algoritmo impara (o dimentica).
+        - $c_{\mu}$ basso $\rightarrow$ Memoria lunga (stabile).
+        - $c_{\mu}$ alto $\rightarrow$ Adattamento rapido (ma rischioso)
+
+#### 8 Rank-One Update (L'Aggiornamento Aggressivo)
+- **L'Intuizione:** E se invece di fare la media pesata di $\mu$ vettori, ci fidassimo ciecamente **solo del primo della classe** (il figlio migliore assoluto $x_1$)?
+- La Formula: $$C_{g+1} = (1 - c_1) C_g + c_1 \frac{(x_1^{g+1} - m_g)}{\sigma} \frac{(x_1^{g+1} - m_g)^T}{\sigma}$$
+- **L'Effetto:**
+    - Aumenta drasticamente la probabilità di generare vettori lungo la linea dell'unico passo migliore appena fatto.
+    - È molto efficiente quando c'è una direzione chiara e dominante da seguire.
+#### 9 Evolution Path (Percorso Evolutivo)
+- Per aggiornare la matrice di covarianza, si considera una **sequenza di passi successivi** avvenuti nel corso di più generazioni (non solo l'ultima).
+#### 10 Il "Vero" Aggiornamento CMA-ES
+- L'algoritmo completo si ottiene combinando due tecniche:
+    - **Rank-one update:** applicato agli _evolution paths_.
+    - **Rank-$\mu$ update:** (quello classico basato sulla media dei migliori).
+
+#### 11 Adattamento di $\sigma$ (Step Size)
+- La grandezza del passo $\sigma$ **non è fissa**.
+- Esiste una regola di aggiornamento che permette la **self-adaptation** (l'algoritmo regola da solo quanto grandi devono essere i passi).
+### 6.2.4 Rissunto
+#### Struttura degli Algoritmi Evolutivi (EAs)
+- **Ciclo di Base (Scheletro):**
+       1. Inizializzazione della popolazione.
+    2. Valutazione (Fitness).
+    3. Selezione dei genitori.
+    4. Variazione (Crossover e Mutazione).
+    5. Sostituzione (creazione della nuova generazione) 5.
+- **Tipologie Principali:**
+    - **Genetic Algorithms:** Usano stringhe di bit; la ricombinazione è il fattore principale.
+    - **Genetic Programming:** L'individuo è un programma (es. albero di sintassi); usato per generare codice.
+    - **Evolution Strategies (ES):** Ottimizzazione a valori reali, basata su mutazione stocastica (es. rumore Gaussiano.
+- **Problemi Comuni:** L'evoluzione può "barare" (Cheating) trovando scorciatoie tecniche che soddisfano la fitness senza risolvere il problema reale (es. cancellare il file target invece di eguagliarlo) o soffrire di "Bloating" (codice spazzatura.
+
+#### Evolution Strategies (ES)
+- **Obiettivo:** Ottimizzazione "Black-box" di funzioni continue dove non si conoscono derivate.
+- **Self-Adaptation:** È fondamentale evolvere non solo la soluzione ($x$), ma anche i parametri di strategia ($\sigma$, step size) per evitare di rimanere bloccati quando la fitness migliora.
+- **Meccanismi di Selezione:**
+    - **Selezione a Virgola $(\mu, \lambda)$:** I genitori vengono scartati. Non è elitaria, favorisce l'esplorazione e l'adattamento dinamico del passo (step size). È generalmente preferita per evitare ottimi locali.
+    - **Selezione col Più $(\mu + \lambda)$:** I genitori competono con i figli. È elitaria (il migliore sopravvive sempre), ottima per sfruttare una zona (exploitation) ma rischia stagnazione.
+
+#### CMA-ES (Covariance Matrix Adaptation)
+- **Funzionamento:** È lo stato dell'arte per l'ottimizzazione continua. Adatta una matrice di covarianza ($C$) per modellare la forma del paesaggio di ricerca (es. trasformando la ricerca da circolare a ellittica).
+- **Aggiornamento della Media:** La nuova media è una media pesata dei migliori $\mu$ figli (Selection), spingendo la ricerca verso le zone promettenti.
+- **Aggiornamento della Covarianza ($C$):** Combina due metodi:
+    - **Rank-$\mu$ update:** Usa le informazioni della popolazione (stabilità).
+    - **Rank-one update:** Usa il percorso evolutivo (evolution path) per sfruttare il "momento" e la direzione dei passi precedenti.
+- **Controllo del Passo ($\sigma$):** La dimensione del passo si adatta confrontando la lunghezza del cammino percorso con quella di una camminata casuale (Path Length Control).
+
+# 7 Artificial Life
