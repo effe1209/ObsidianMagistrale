@@ -1626,4 +1626,505 @@ Assunzioni:
 
 ![[image-30.png|326x278]]
 
-## 7.2 Universal Computer
+## 7.2 Universal Computer - Calcolo Universale
+#rileggere
+
+Questo capitolo spiega come gli Automi Cellulari (CA) non siano solo generatori di pattern visivi, ma possano fungere da veri e propri sistemi di calcolo.
+- **Il Caso dell'ECA 110:** La "Regola 110" degli Automi Cellulari Elementari (identificata da Stephen Wolfram) è un esempio di sistema capace di **computazione universale**.
+- **Definizione:** Essere un computer universale significa che, modificando solo l'input iniziale, il sistema è in grado di calcolare qualsiasi funzione computabile. È teoricamente equivalente a una **Macchina di Turing universale**.
+- **Nota sulla complessità:** La configurazione necessaria per ottenere la computazione universale non è necessariamente la più semplice possibile4.
+**Varianti del modello CA - Variazioni**
+Oltre al modello classico, esistono molte varianti che ne estendono le capacità:
+- **Non-uniformi:** Celle diverse possono seguire regole di aggiornamento diverse.
+- **Non-locali (Learning rules):** La definizione di "vicinato" cambia, ad esempio seguendo la struttura di un grafo (automata network) invece di una griglia fissa.
+- **Asincroni:** Le celle non si aggiornano tutte contemporaneamente nello stesso istante (Asynchronous updates).
+- **Continui:** Si abbandona la discretizzazione per avere spazio o tempo continui.
+### 7.2.1 Extending GoL (Estensione del Game of Life)
+
+Il concetto classico di _Game of Life_ viene generalizzato per superare i limiti discreti.
+- **Dalla Discretizzazione alla Continuità:** Si passa da griglie fisse e stati binari (0/1) a modelli che ricordano le _Cellular Neural Networks_ (calcolo analogico/continuo)
+- **Definizione Formale:** Un Automa Cellulare (CA) è definito dalla tupla $(L, T, S, N, \phi)$, dove $L$ è il reticolo (spazio), $T$ la linea temporale, $S$ l'insieme degli stati, $N$ il vicinato e $\phi$ la regola locale
+- **Obiettivo:** Creare comportamenti emergenti complessi in spazi e tempi non necessariamente discreti
+
+### 7.2.2 Lenia
+Lenia è una generalizzazione "continua" degli Automi Cellulari.
+- **Continuità Totale:** A differenza del CA classico, in Lenia lo spazio, il tempo e gli stati sono continui (i valori tendono a zero invece di essere discreti: $1/R, 1/T, 1/P \rightarrow 0$)
+- **Ingredienti:** La regola di aggiornamento si basa su tre componenti chiave: la distribuzione del Potenziale, la distribuzione della Crescita e il Kernel
+
+### 7.2.3 Potential Distribution - Distribuzione del Potenziale
+Rappresenta la "percezione" che una cella ha del suo vicinato.
+- **Calcolo:** Si calcola tramite una **convoluzione** tra lo stato attuale della griglia ($A^t$) e un _Kernel_ ($K$): $U^t(x) = K * A^t(x)$
+- **Il Kernel ($K$):** Definisce l'area di influenza. Spesso ha la forma di anelli concentrici (shell) definiti da picchi $\beta$ e raggi specifici. Usa la distanza polare dal centro
+
+![[image-31.png|532x207]]
+
+### 7.2.4 Growth Distribution - Distribuzione della Crescita
+Determina come cambia lo stato della cella in base al potenziale percepito.
+- **Mapping:** È una funzione $G$ che mappa il valore del potenziale $U$ in un valore di crescita nell'intervallo $[-1, 1]$
+- **Forma:** Solitamente è una funzione unimodale (una campana Gaussiana) definita da un centro $\mu$ e una larghezza $\sigma$.
+- Aggiornamento: Il nuovo stato è dato dallo stato precedente più la crescita moltiplicata per un piccolo intervallo di tempo $\Delta t$, il tutto "clippato" tra 0 e 1:$$A^{t+\Delta t} = \text{clip}_{[0,1]}(A^t + \Delta t \cdot G(U^t))$$
+- **Efficienza:** Le convoluzioni vengono calcolate efficientemente nel dominio delle frequenze usando la FFT (Fast Fourier Transform)
+![[image-32.png|467x233]]
+
+### 7.2.5 Extended Lenia
+È un'espansione ulteriore di Lenia che introduce maggiore complessità e stabilità.
+- **Multidimensionale:** Funziona in 3 o più dimensioni, permettendo forme più stabili
+- **Kernel Multipli:** Usa diversi kernel, ognuno con il proprio raggio e la propria funzione di crescita, aumentando il comportamento caotico
+- **Canali Multipli:** Introduce diversi "canali" (come mondi paralleli o tipi di sostanze) che interagiscono tra loro, permettendo la specializzazione dei ruoli
+- **Risultati:** A differenza della Lenia base, la versione estesa mostra fenomeni di **auto-replicazione**, solitoni (strutture che si auto-organizzano) e forme complesse come "serpenti 3D"
+### 7.2.6 (Extended) Lenia results + Flow Lenia
+- **Risultati Chiave:** A differenza della versione base, la **Extended Lenia** mostra capacità di **auto-replicazione**: i "solitoni" (strutture stabili auto-organizzanti) possono dividersi in due parti che si respingono a vicenda.
+- **Strutture complesse:** Emergono forme tridimensionali (es. "3D Snake") capaci di mangiare e crescere, risultato della coordinazione tra canali multipli con dinamiche diverse
+- **Flow-Lenia:** Una variante che introduce la **conservazione della massa** nel sistema per facilitare la ricerca evolutiva
+
+### 7.2.7 Biomaker CA – Plant-based lifeforms
+Un modello di vita artificiale ispirato alle piante.
+- **Elementi dell'Ecosistema:** Include Terra, Aria, Agenti (Semi), celle Immobili e Sole
+- **Metabolismo:** Gli agenti acquisiscono energia dai nutrienti della terra (tramite le radici) e dell'aria (tramite le foglie); il Sole rigenera i nutrienti dell'aria, le celle immobili quelli della terra
+- **Ciclo Vitale:**
+    - **Riproduzione:** Avviene tramite spargimento di semi soggetti a mutazione
+    - **Competizione:** La crescita consuma spazio e nutrienti (che sono finiti); le piante morte restituiscono nutrienti al terreno
+- Earth (1), Air (2), Seed Agent (3), Immovable (4), Sun (5)
+- Ogni cellula percepisce un quartiere locale
+![[image-33.png]]
+
+### 7.2.8 Biomaker CA - Meccaniche Generali
+- **Azioni:** Le cellule eseguono azioni specifiche (nascere, specializzarsi, muoversi) in base al loro tipo
+- **Meta-Evoluzione:** Il sistema usa due livelli di ottimizzazione:
+    - Un _Outer loop_ che genera diversi ambienti.
+    - Un _Inner loop_ (ottimizzazione ES) che adatta gli agenti a quegli ambienti        
+    - **Nota:** Questo processo è computazionalmente molto costoso
+
+### 7.2.9 Particle Swarm ALife
+Sistemi basati su agenti puntiformi invece che su griglie.
+- **Definizione:** Ogni particella è un pixel con posizione, velocità e colore (che ne identifica la "famiglia")
+- **Dinamica:** Il comportamento emerge dalle forze di **attrazione e repulsione** tra le diverse famiglie (es. "il rosso attrae il rosso", "il giallo respinge il rosso")
+- **Risultato:** Si creano comportamenti auto-organizzanti come il _flocking_ (stormi) o strutture stabili, gestendo anche le collisioni
+
+### 7.2.10 CA Applications - Applicazioni degli Automi Cellulari
+Oltre alla simulazione della vita, i CA hanno usi pratici in ingegneria e informatica:
+- **Hardware (VLSI):** Progettazione di circuiti e generatori di numeri pseudo-casuali per l'auto-test dei chip
+- **Crittografia:** Sfruttando la generazione di sequenze complesse
+- **Image Processing:**
+    - Rilevamento dei bordi e riduzione del rumore
+    - **Segmentazione:** Segmentare immagini ad alta risoluzione (sfida difficile anche per le reti neurali moderne) usando pochissimi parametri
+- **Compressione:** Di testo e immagini
+## 7.3 Neural Cellular Automata (NCA)
+
+È un modello che fonde gli Automi Cellulari con il Deep Learning per studiare la **morfogenesi** (come un organismo sviluppa la sua forma) e l'auto-organizzazione.
+- **Obiettivo:** Creare sistemi capaci di "coltivare" una forma specifica (es. un'immagine) partendo da un singolo seme e di mantenerla stabile nonostante le perturbazioni
+### 7.3.1 Struttura della Cella
+Ogni cella non è un semplice valore binario, ma un **vettore di numeri reali** (solitamente 16 canali):
+- **Primi 3 canali:** RGB (colore visibile)
+- **Quarto canale:** Alpha (trasparenza/vitalità). Se $\alpha > 0.1$ la cella è "viva", altrimenti è "morta" o in crescita 
+- **Canali rimanenti:** Stati nascosti (hidden state) per la comunicazione locale.
+
+### 7.3.2 Funzionamento (Architettura)
+L'aggiornamento avviene in due fasi cicliche:
+- **Percezione:** Ogni cella "vede" il suo vicinato $3 \times 3$ attraverso filtri convoluzionali fissi (es. filtri di Sobel per rilevare gradienti $x$ e $y$)
+- **Aggiornamento (Update Rule):**
+    - Un **piccolo network neurale** (rete densa/MLP) riceve il vettore di percezione e calcola la variazione di stato $\Delta s$ 
+    - La stessa rete è condivisa da **tutte** le celle (come in un CA classico, le regole sono locali e uniformi)
+    - **Aggiornamento Stocastico:** Per simulare l'asincronia naturale, ogni cella si aggiorna con una probabilità del 50% a ogni passo
+
+### 7.3.3 Stabilità e Rigenerazione
+- **Training:** Si parte da una singola cella viva e si addestra la rete affinché, dopo $N$ passi, la griglia assomigli all'immagine target
+- **Pool di Stati:** Per rendere il pattern stabile (un "attrattore"), si usa un pool di stati passati durante l'addestramento. Il sistema impara a correggere errori partendo non solo dall'inizio, ma anche da stati intermedi o degradati 
+- **Rigenerazione:** Grazie a questo addestramento robusto, se una parte dell'immagine viene cancellata ("trauma"), le celle rimanenti comunicano per ricostruire la parte mancante
+
+### 7.3.4 Applicazione: Self-classifying MNIST
+- Un esempio di **classificazione distribuita**: invece di un classificatore centrale, ogni cella di un'immagine (es. una cifra MNIST) decide autonomamente quale numero rappresenta.
+- Le celle devono raggiungere un "accordo" (consenso) tramite interazioni locali. Gli ultimi 10 canali del vettore di stato rappresentano le probabilità delle classi (0-9).
+
+![[image-34.png]]
+
+### 7.3.5 Adding Stability (Aggiungere Stabilità)
+
+Per evitare che l'immagine generata si degradi o cambi una volta completata, bisogna rendere il pattern target un **attrattore** stabile.
+- **Il Problema:** Se addestriamo solo partendo dal seme iniziale, la rete non sa cosa fare se l'immagine devia leggermente una volta finita.
+- **La Soluzione (Sample Pool):** Si utilizza una "pool" (riserva) di stati passati. Invece di ricominciare sempre da zero, la rete viene addestrata a riprendere da questi stati intermedi o finiti salvati nella pool, imparando a correggerli e mantenerli stabili nel tempo
+
+### 7.3.6 Regenerate after Trauma - Rigenerazione dopo un Trauma
+L'NCA è capace di autoripararsi se viene danneggiato
+- **Metodo di Training:** Per insegnare questa capacità, durante l'addestramento si applicano danni intenzionali agli stati prelevati dalla pool.
+- **Il Danno:** Solitamente si azzera (cancella) una regione circolare casuale dell'immagine. La rete è così costretta a imparare come ricostruire le informazioni mancanti basandosi sulle celle sopravvissute nel vicinato
+
+### 7.3.7 Self-classifying MNIST
+In questa applicazione, l'NCA non viene usato per generare immagini, ma per **classificarle** (riconoscere cifre scritte a mano).
+- **Consenso Distribuito:** Non c'è un decisore centrale; ogni singola cella vede solo il suo vicinato e propone una predizione (0-9). La classificazione finale emerge dall'**accordo** (consenso) della maggioranza delle celle.
+
+![[image-35.png|546x280]]
+
+Ecco un riassunto strutturato dei concetti chiave del documento "Logical Agents", organizzato per essere inserito direttamente nei tuoi schemi di studio.
+
+---
+# 8 LOGICAL AGENTS
+#rileggere
+## 8.1 Agenti Basati su Conoscenza - Knowledge-Based Agents
+Questi agenti mantengono uno **stato interno** (conoscenza) per operare in ambienti parzialmente osservabili.
+- **Knowledge Base (KB):** Un insieme di "frasi" (fatti/regole) espresse in un linguaggio formale che rappresentano ciò che l'agente sa1.
+- **Approccio Dichiarativo vs Procedurale:**
+    - _Dichiarativo:_ Diciamo all'agente _cosa_ deve sapere (TELL) e chiediamo _cosa_ fare (ASK).
+    - _Procedurale:_ Codifichiamo direttamente _come_ eseguire le azioni.
+- **Ciclo di vita:** L'agente percepisce $\rightarrow$ Aggiorna la KB (TELL) $\rightarrow$ Interroga la KB per decidere l'azione (ASK) $\rightarrow$ Esegue l'azione $\rightarrow$ Aggiorna la KB con l'azione eseguita (TELL).
+![[image-36.png|200x295]]
+
+```c
+function KB-Agent(percept) returns an action
+	static: KB, aknowledge base
+			t, a counter, initially 0, indicating time
+	Tell(KB, Make-Percept-Sentence(percept, t))
+	action <- Ask(KB, Make-Action-Query(t))
+	Tell(KB, Make-Action-Sentence(action, t))
+	t <- t+1
+	return action
+```
+
+#### Wupus World
+#### 1. Definizione PEAS (Performance, Environment, Actuators, Sensors)
+- **Performance:** +1000 per l'oro, -1000 se muori (Wumpus o Pozzo), -1 per ogni passo (incentiva l'efficienza), -10 per scoccare la freccia.
+- **Environment:** Una griglia 4x4 di stanze.
+    - C'è un **Wumpus** (mostro) che mangia l'agente se entra nella sua stanza.
+    - Ci sono dei **Pozzi (Pits)** in cui si cade (morte).
+    - C'è dell'**Oro**.
+- **Actuators:** Muoversi (Avanti, Gira Dx, Gira Sx), Afferrare (Grab), Tirare (Shoot).
+- **Sensors (Cruciale!):** L'agente percepisce solo la casella attuale.
+    - **Puzza (Stench):** Se il Wumpus è in una casella adiacente (non diagonale).
+    - **Brezza (Breeze):** Se un Pozzo è in una casella adiacente.
+    - **Luccichio (Glitter):** Se l'Oro è nella casella attuale.
+    - **Urlo (Scream):** Se il Wumpus viene ucciso (si sente ovunque).
+    - **Bump:** Se sbatti contro un muro.
+
+#### 2. Perché serve la Logica?
+Un agente a riflessi (che agisce solo sull'istante) fallirebbe.
+- _Esempio:_ Se sento "Brezza", non so _quale_ casella vicina ha il pozzo. Se mi muovo a caso, muoio.
+- **L'Agente Logico** usa la **Knowledge Base (KB)** per accumulare indizi nel tempo.
+    - _Passo 1:_ Sono in [1,1], niente puzza/brezza → deduco che [1,2] e [2,1] sono **sicure (OK)**.
+    - _Passo 2:_ Vado in [2,1], sento Brezza → deduco che c'è un pozzo in [2,2] O in [3,1].
+    - _Passo 3:_ Torno indietro e vado in [1,2], sento Puzza → deduco Wumpus in [2,2] O in [1,3]
+    - _Inferenza:_ Incrociando i dati, l'agente può dedurre posizioni sicure che non ha ancora visitato.
+
+### 8.1.2 Logica: Sintassi e Semantica
+Per ragionare, serve un linguaggio formale.
+- **Sintassi:** Le regole che definiscono quali frasi sono "ben formate" (grammatica).
+- **Semantica:** Definisce la "verità" delle frasi rispetto a un **Modello** (un "mondo possibile"). Esempio: "A è vero" significa che nel modello $m$, la proposizione $A$ vale _true_.
+- **Entailment (Conseguenza Logica) $KB \models \alpha$:**
+    - La frase $\alpha$ è conseguenza logica di $KB$ se e solo se **in tutti** i modelli in cui $KB$ è vera, anche $\alpha$ è vera
+    - Formalmente: $M(KB) \subseteq M(\alpha)$ -> ossia l'insieme dei mondi dove KB è vera è contenuto nell'insieme dei mondi dove $\alpha$ è vera
+![[image-37.png]]
+- Dove $M(\beta)=M(KB)$
+
+**Esempio Wupus**
+![[image-38.png|524x242]]
+Ora utilizziamo le conoscenze del mondo del wupus e riduciamo le possibili alternative -> passiamo da 8 a 3 possibili
+![[image-39.png|524x430]]
+### 8.1.3 Inferenza Logica
+Il processo per derivare nuove frasi vere da quelle esistenti.
+- **Model Checking:** Enumerare tutti i modelli possibili per verificare se $KB \models \alpha$ come ad esempio le Tabelle di Verità.
+	- È robusto ma costoso ($O(2^n)$)
+	- Consiste nel guardare se l'insieme $KB$ è sottoinsieme della sentenza $\alpha$
+- **Soundness (Correttezza):** Un algoritmo è _sound_ se deriva **solo** frasi che sono effettivamente conseguenze logiche (non inventa falsità)
+- **Completeness (Completezza):** Un algoritmo è _complete_ se è in grado di derivare **tutte** le frasi vere possibili
+
+### 8.1.4 Logica Proposizionale (PL)
+La forma più semplice di logica, basata su simboli atomici ($P, Q$) e connettivi ($\neg, \wedge, \vee, \Rightarrow, \Leftrightarrow$).
+- **Validità (Tautologia):** Una frase vera in _tutti_ i modelli (es. $P \vee \neg P$).
+- **Soddisfacibilità (SAT):** Una frase vera in _almeno_ un modello.
+- **Teorema di Deduzione:** $\alpha \models \beta$ se e solo se $(\alpha \Rightarrow \beta)$ è valida (tautologia)
+- **Dimostrazione per Assurdo (Refutazione):** $\alpha \models \beta$ se e solo se $(\alpha \wedge \neg \beta)$ è **insoddisfacibile** (contraddizione). _Questo è il concetto base della Risoluzione._
+
+### 8.1.5 Algoritmi per la PL
+Ci sono due approcci principali per decidere l'entailment:
+#### A. Model Checking (Controllo sui Modelli)
+Un approccio basato sull'enumerazione dei possibili mondi per verificare l'entailment logico (KB⊨α).
+1. **Truth Table Enumeration (Enumerazione della Tabella di Verità):**
+    - L'algoritmo costruisce la tabella di verità completa per le variabili proposizionali coinvolte.
+    - Verifica che in **tutti** i modelli (righe) in cui la _Knowledge Base_ è vera, anche la frase α sia vera.
+    - **Proprietà:** È un algoritmo **Sound** (corretto) e **Complete** (completo), ma la complessità temporale è **esponenziale** ($O(2n)$), rendendolo impraticabile per un numero elevato di simboli.
+2. **Local Search (Ricerca Locale):**
+    - Le slide menzionano che i metodi di ricerca locale (es. WalkSAT, Simulated Annealing) possono essere utilizzati per trovare un modello soddisfabile.
+
+#### B. Theorem Proving (Deduzione / Inferenza)
+L'applicazione di regole di inferenza per derivare nuove frasi (teoremi) da quelle esistenti nella Knowledge Base, senza dover enumerare i modelli.
+- **Inference Rules (Regole di Inferenza):** Si basano su pattern standard (es. _Modus Ponens_, _And-Elimination_) per generare nuove frasi in modo deduttivo.
+- **Monotonicity (Monotonia):** Una proprietà fondamentale della logica: l'insieme delle frasi implicate dalla KB può solo crescere (o restare uguale) aggiungendo nuove informazioni. Aggiungere conoscenza non invalida mai le conclusioni precedenti.
+- **Resolution (Risoluzione):**
+    - È una regola di inferenza singola che, se usata correttamente, fornisce un algoritmo di inferenza **Sound e Complete** (nota: le slide sottolineano che abbiamo algoritmi completi, e la risoluzione è il principale per la logica proposizionale generale).
+    - **CNF (Conjunctive Normal Form):** Per usare la risoluzione, le frasi devono essere convertite in forma congiuntiva normale (congiunzione di disgiunzioni di letterali).
+    - **Refutation (Dimostrazione per Contraddizione):** L'algoritmo tipico aggiunge la negazione della tesi (¬α) alla KB e cerca di derivare la **clausola vuota** (contraddizione). Se la si ottiene, allora α deve essere vera.
+
+### 8.1.6 Horn Clauses e Chaining
+Un sottoinsieme della logica proposizionale molto efficiente.
+- **Clausola di Horn:** Una disgiunzione con **al massimo un** letterale positivo (es. ¬A∨¬B∨C, che equivale a A∧B⇒C).
+- **Vantaggio:** L'inferenza con clausole di Horn è lineare $O(N)$ rispetto alla dimensione della KB.
+
+**Algoritmi di Inferenza:**
+- **Forward Chaining (Data-Driven):** Parte dai fatti noti per derivare nuove conclusioni ("in avanti"). L'idea è attivare ogni regola le cui premesse sono soddisfatte, aggiungendo la conclusione alla KB.
+    - _Implementazione:_ Mantiene un **conteggio** delle premesse mancanti per ogni regola. Quando un simbolo viene inferito, decrementa i contatori delle regole che lo contengono; se un contatore arriva a zero, la regola si attiva.
+    - _Pro/Contro:_ È completo, ma può generare molti fatti inutili se non servono all'obiettivo.
+    - Partendo da $A$ e $B$ l'unico punto che posso derivare è L dato che gli altri mi ritornano tutti 1 (falso) dato che non sono ancora disponibili.
+    - Continua ad esplorare tutto fino a quanto non raggiungo la query $Q$
+![[image-40.png|462x288]]
+- **Backward Chaining (Goal-Driven):** Lavora all'indietro partendo dalla query q. Se q non è noto, cerca le regole che hanno q come conclusione e tenta di dimostrare le loro premesse (sotto-obiettivi) ricorsivamente.
+    - _Struttura:_ Forma un albero di ricerca AND-OR (AND = tutte le premesse di una regola devono essere vere; OR = basta una regola funzionante per provare un fatto).
+    - _Pro/Contro:_ Spesso più efficiente in pratica perché evita inferenze irrilevanti (base di Prolog).
+    - Quando arrivo a questa situazione ho che $A$ e $B$ sono fatti quindi posso prendere definitivamente anche $L$ e di conseguenza risalgo fino a $Q$
+![[image-41.png|487x325]]
+    
+---
+# 9 First-Order Logic - FOL Inference
+#rileggere
+la Logica Proposizionale (PL) alla Logica del Primo Ordine (FOL) è dettato dalla necessità di maggiore espressività e composizionalità.
+- **Ontological Commitment (Cosa esiste):** In FOL il mondo è costituito da **Fatti**, **Oggetti** e **Relazioni** (mentre in PL esistono solo Fatti).
+- **Epistemological Commitment (Credenze dell'agente):** Vero/Falso/Sconosciuto.
+
+### 9.1.1 Sintassi e Semantica
+- **Simboli:** 
+	- Costanti (es. $Bacciu$, $Juventus$)
+	- Predicati ($BrotherOf$, $>$)
+	- Funzioni ($sqrt$)
+	- Variabili ($x, y$)
+	- Connettivi ($\land, \lor, \neg, \Rightarrow$)
+	- Uguaglianza ($=$)
+	- Quantificatori ($\forall, \exists$).
+- **Modello:** Contiene uno o più elementi del dominio (oggetti) e le loro relazioni.
+- **Interpretazione:** Associa un referente concreto a ogni costante, predicato e funzione.
+- **Verità:** Una frase $p(t_1, \dots, t_n)$ è vera _se e sose_ gli oggetti riferiti dai termini $t_i$ sono nella relazione $p$definita dall'interpretazione.
+
+### 9.1.2 Database Semantics & Closed-World Assumption
+Per semplificare la rappresentazione della conoscenza (KB), si adottano spesso assunzioni da database:
+1. **Closed-World Assumption (CWA):** Le frasi atomiche che non sono note come vere, sono considerate false (niente informazioni "nascoste").
+2. **Unique Names Assumption:** Ogni costante, predicato o funzione ha un unico referente univoco.
+
+## 9.2 Instanziazione Universale ed Esistenziale
+Queste regole permettono di manipolare i quantificatori per inferire nuove frasi.
+### 9.2.1 Universal Instantiation - UI
+**Definizione:** Ogni frase ottenuta sostituendo una variabile quantificata universalmente con un _ground term_ (termine senza variabili) è un'inferenza valida.
+Regola di Inferenza:
+$$\frac{\forall v ~ \alpha}{\text{Subst}(\{v/g\}, \alpha)}$$
+dove $v$ è la variabile, $g$ è un ground term.
+**Es:** Da $∀𝑥\ 𝐴𝑡𝑡𝑒𝑛𝑑 (𝑥, 𝐴𝐼𝐹)$ possiamo inferire $Attend(Pietro, AIF), Attend(Paola, AIF), …$
+
+### 9.2.2 Existential Instantiation - EI
+**Definizione:** Possiamo sostituire una variabile quantificata esistenzialmente con una nuova costante (mai usata prima nel KB).
+Regola di Inferenza:
+$$\frac{\exists v ~ \alpha}{\text{Subst}(\{v/k\}, \alpha)}$$
+dove $k$ è una costante Skolem.
+**Dettagli Tecnici:**
+- **Skolem Constant:** La costante $k$ "porta in esistenza" un oggetto specifico.
+- La nuova KB ottenuta con EI **non è logicamente equivalente** alla KB originale, ma è _soddisfacibile_ se e solo se la KB originale lo era.
+
+## 9.3 Riduzione alla Logica Proposizionale - Propositionalization
+**Concetto:** È possibile trasformare una $KB_{FOL}$ in una $KB_{PL}$ eliminando i quantificatori tramite UI ed EI, preservando l'entailment per frasi _ground_.
+Teorema di Herbrand (1930):
+Se $KB_{FOL} \models \alpha$, allora esiste una $KB_{PL}$ di dimensione finita tale che $KB_{PL} \models \alpha$
+**Algoritmo (Idea intuitiva):**
+1. Creare $KB_{PL}$ istanziando termini fino a profondità $n=0, 1, 2...$
+2. Fermarsi quando la KB implica $\alpha$.
+
+**Problema:** I simboli di funzione inducono infiniti termini ground ($Father(Father(John))...$). Questo rende il processo inefficiente e genera molte frasi inutili. L'entailment in FOL è **semidecidibile** (Turing/Church, 1936).
+
+## 9.4 Unificazione (Unification)
+**Definizione:** L'unificazione è il processo che trova una sostituzione $\theta$ che rende identiche due diverse espressioni logiche.
+Regola:
+$$\text{Unify}(\alpha, \beta) = \theta \iff \alpha\theta = \beta\theta$$
+Standardizing Apart:
+Se due frasi usano la stessa variabile (es. $x$) ma con significati diversi (ambiti diversi), è necessario rinominare una delle variabili per evitare conflitti prima di unificare.
+- Esempio: $\text{Unify}(Knows(John, x), Knows(y, OJ)) = \{x/OJ, y/John\}$
+
+## 9.5 Generalized Modus Ponens (GMP)
+**Definizione:** È una versione "lifted" (elevata) del Modus Ponens che lavora direttamente con variabili e quantificatori tramite unificazione, applicata a **Definite Clauses** (clausole con esattamente un letterale positivo).
+Regola di Inferenza:
+$$\frac{p'_1, p'_2, \dots, p'_n, (p_1 \land p_2 \land \dots \land p_n \Rightarrow q)}{q\theta}$$
+dove $\text{Unify}(p'_i, p_i) = \theta$ per ogni $i$.
+**Proprietà:**
+- **Soundness:** Il GMP è corretto (sound).
+- **Efficienza:** Evita la generazione di infinite frasi proposizionali irrelevanti.
+
+## 9.6 Forward & Backward Chaining
+Algoritmi applicabili a KB composte solo da **Definite Clauses** (es. Horn Clauses). In questo sottoinsieme della FOL, l'inferenza è ancora semidecidibile.
+### 9.6.1 Forward Chaining (FC)
+**Funzionamento:** Approccio _data-driven_. Si parte dai fatti noti, si attivano tutte le regole le cui premesse sono soddisfatte e si aggiungono le conclusioni alla KB. Si ripete finché non si deriva la query o non ci sono più fatti nuovi.
+- **Matching:** È la parte costosa (NP-hard nel caso generale) perché bisogna confrontare ogni premessa con ogni fatto.
+- **Proprietà:** È **Sound** e **Complete** per le clausole definite.
+
+### 9.6.2 Backward Chaining (BC)
+**Funzionamento:** Approccio _goal-driven_. Si parte dalla query $q$ e si cercano regole che hanno $q$ come conclusione. Si generano nuove sottoproposizioni (premesse) ricorsivamente.
+- **Struttura:** Ricerca Depth-First (DFS), AND-OR search.
+- **Proprietà:** È **Sound**, ma **Not Complete** (può finire in loop infiniti o spazi infiniti se non controllata).
+- **Utilizzo:** Base per la _Logic Programming_.
+
+### 9.6.3 Esempio "Crime" (Slide 27-31)
+_Problema:_ Provare `Criminal(West)`.
+- **FC:** Parte da `Missile(M1)`, `Owns(Nono, M1)`, `American(West)` etc., e sale fino a derivare `Criminal(West)`.
+- **BC:** Parte da `Criminal(West)`, cerca una regola che implica `Criminal(x)`, unifica $\{x/West\}$, e procede a verificare le premesse (`American(West)`, `Weapon(y)`, etc.).
+
+## 9.7 Logic Programming (Prolog)
+**Definizione:** La computazione viene vista come inferenza logica su una KB.
+- I programmi sono insiemi di clausole nella forma: `head :- literal1, ..., literaln`.
+
+**Funzionamento (Prolog):**
+- Implementa **Backward Chaining** su clausole di Horn.
+- Usa ottimizzazioni e può gestire aritmetica.
+- **Closed-World Assumption:** `alive(X) :- notDead(X)` (Negation as failure).
+
+**Limiti:**
+- Prolog è **incompleto** per clausole definite a causa della strategia di ricerca DFS (può bloccarsi in rami infiniti dove una BFS troverebbe la soluzione).
+
+## 9.8 Resolution (Risoluzione)
+**Definizione:** Un algoritmo di inferenza **completo** per tutta la FOL (non solo clausole definite), basato sulla prova per contraddizione.
+Regola di Inferenza (Lifted Resolution):
+$$\frac{p_1 \lor \dots \lor p_k, \quad m_1 \lor \dots \lor m_n}{(p_1 \lor \dots \lor p_{i-1} \lor p_{i+1} \lor \dots \lor m_1 \lor \dots \lor m_{j-1} \lor m_{j+1} \lor \dots)\theta}$$
+dove $\text{Unify}(p_i, \neg m_j) = \theta$.
+
+### 9.8.1 Algoritmo: Proof by Contradiction
+Per provare che $KB \models \alpha$, si aggiunge $\neg \alpha$ alla KB e si cerca di derivare la clausola vuota (contraddizione) convertendo tutto in **CNF (Conjunctive Normal Form)**.
+### 9.8.2 Conversione in CNF (Passaggi Dettagliati)
+1. **Eliminare Implicazioni:** $A \Rightarrow B$ diventa $\neg A \lor B$.
+2. **Spostare la Negazione all'interno:** Usare le leggi di De Morgan e $\neg \forall x p \equiv \exists x \neg p$.
+3. **Standardizzare le Variabili:** Rinominare le variabili affinché ogni quantificatore usi un nome diverso.
+4. **Skolemization:**
+    - Sostituire variabili quantificate esistenzialmente ($\exists$) con Costanti di Skolem o **Funzioni di Skolem**.
+    - Se l'esistenziale è dentro un universale ($\forall x \exists y$), $y$ diventa $F(x)$ (funzione dell'universale che lo precede).
+5. **Rimuovere Quantificatori Universali:** Assumere implicitamente che tutte le variabili rimaste siano $\forall$.
+6. **Distribuire $\land$ su $\lor$:** Per ottenere una congiunzione di disgiunzioni.
+
+### 9.8.3 Proprietà della Risoluzione
+- **Completezza:** Se $KB \models \alpha$, la risoluzione derivarà una contraddizione (Teorema di completezza di Gödel/Robinson).
+- **Semidecidibilità:** Se la frase _non_ è vera, la risoluzione potrebbe non fermarsi mai (loop infinito). Non possiamo sapere in tempo finito se "non esiste prova".
+## 9.9 Ontologie e Semantic Web
+
+**Definizione:** Rappresentazione formale della conoscenza di un dominio specifico.
+- **Struttura:** Categorie (Classi), Sottocategorie, Proprietà degli oggetti (Relazioni), Istanze (Individui).
+- **Vantaggi:** Controllo automatico della validità, derivazione di nuove proprietà, standardizzazione.
+- **Linguaggio:** FOL è il linguaggio base delle ontologie.
+
+**Strumenti citati:**
+- **Protégé:** Editor open-source per ontologie (Stanford).
+- **SPARQL:** Linguaggio di query per ontologie.
+- **Esempi:** Wikidata (DB strutturato per Wikipedia), ConceptNet (Semantic network per common sense).
+---
+# 10 Planning (Classical & Extensions)
+
+## 10.1 Classical Planning e PDDL
+
+### 10.1.1 Definizione di Classical Planning
+Il compito di trovare una sequenza di azioni per raggiungere un obiettivo in un ambiente discreto, deterministico, statico e completamente osservabile1.
+A differenza degli agenti logici puri o basati su ricerca generica, il Classical Planning utilizza linguaggi ad-hoc e sfrutta sia l'inferenza logica che la ricerca.
+
+### 10.1.2 Planning Domain Definition Language (PDDL)
+Linguaggio standard (1998) basato su Lisp
+- **Semantica:** "Database semantics" con **Closed-world assumption** (ciò che non è specificato è falso) e **Unique-names assumption** (nomi diversi indicano oggetti diversi)
+- **Struttura:** Ogni programma PDDL distingue tra:
+    - **Dominio:** Conoscenza comune a tutti i problemi (schema delle azioni)
+    - **Problema:** Conoscenza specifica dell'istanza (stato iniziale e goal)
+
+### 10.1.3 Stati in PDDL
+**Definizione:** Uno stato è una congiunzione di **ground atomic fluents**
+- **Ground:** Nessuna variabile (es. $At(Truck, Pisa)$ è ground, $At(Truck, x)$ no)
+- **Atomic:** Singolo predicato senza connettivi logici complessi
+- **Fluents:** Aspetti del mondo che cambiano nel tempo
+
+### 10.1.4 Azioni in PDDL
+Le azioni sono definite tramite un **Action Schema** che include:
+1. **Action name** e lista di variabili.
+2. **Precondition:** Congiunzione di letterali (positivi o negati) che devono essere veri affinché l'azione sia applicabile.
+3. **Effect:** Congiunzione di letterali che descrive come cambia lo stato.
+
+**Esempio (Schema):**
+Snippet di codice
+```
+Action(Fly(p, from, to),
+    PRECOND: At(p, from) \land Plane(p) \land Airport(from) \land Airport(to)
+    EFFECT: \neg At(p, from) \land At(p, to))
+```
+
+## 10.2 Definizione del Problema ed Esecuzione
+### 10.2.1 Specifica del Problema
+Un problema richiede, oltre al dominio, la definizione di:
+- **Initial state:** Congiunzione di fluenti ground
+- **Goal state:** Congiunzione di letterali (può contenere negazioni)
+
+### 10.2.2 Applicabilità ed Esecuzione
+Regola di Applicabilità:
+Data un'azione con precondizione $P$, l'azione è applicabile in uno stato $s$ sse:
+$$S \models P$$
+Ogni letterale positivo in $P$ deve valere in $s$ e ogni letterale negato in $P$ non deve essere presente in $s$
+Risultato dell'Azione:
+Il nuovo stato $s'$ è calcolato come:
+$$s' = Result(s, a) = (s - DEL(a)) \cup ADD(a)$$
+
+- **DEL(a):** Fluenti che appaiono negati negli effetti di $a$ (vengono rimossi).
+- **ADD(a):** Fluenti che appaiono positivi negli effetti di $a$ (vengono aggiunti)
+
+## 10.3 Algoritmi di Planning (Search)
+### 10.3.1 Forward State-Space Search
+Ricerca nello spazio degli stati partendo dallo stato iniziale (Progression search):
+1. Inizia allo stato iniziale.
+2. Unifica lo stato corrente con le precondizioni di ogni schema di azione per trovare le azioni applicabili.
+3. Applica la sostituzione risultante per ottenere un'azione ground.
+4. Applica l'azione e genera il nuovo stato
+
+### 10.3.2 Backward Search
+Ricerca partendo dal goal verso lo stato iniziale (Regression search):
+1. Considera le **azioni rilevanti**: un'azione è rilevante se un suo effetto unifica con uno dei letterali del goal e nessuno dei suoi effetti nega parti del goal.
+2. Applica le azioni a ritroso fino a raggiungere lo stato iniziale.
+    **Vantaggio:** Il _branching factor_ è ridotto rispetto alla forward search perché si considerano solo percorsi rilevanti per il goal
+
+## 10.4 Euristiche e Pruning
+Per migliorare l'efficienza della ricerca si usano euristiche basate su **problemi rilassati**
+### 10.4.1 Heuristics
+1. **Ignore Precondition Heuristic:**
+    - Ogni azione è applicabile (si ignorano le precondizioni)
+    - Si cerca il numero minimo di azioni i cui effetti uniti soddisfano il goal. 
+    - **Proprietà:** È un'euristica **ammissibile** (sottostima sempre la lunghezza della soluzione)
+2. **Ignore Delete List Heuristic:**
+    - Rimuove i letterali negativi dagli effetti delle azioni
+    - Le azioni non possono annullare passi precedenti (progresso monotonico).
+    - Spesso usata con Hill-Climbing, ma non garantisce la soluzione ottima (approssimazione)
+
+### 10.4.2 Pruning (Potatura)
+1. **Symmetry Reduction:** Elimina i rami simmetrici dell'albero di ricerca, mantenendone solo uno (es. l'ordine di oggetti indistinguibili non conta)
+2. **Forward Pruning:** Taglia rami basandosi su una "preferred action" derivata da un piano rilassato
+    - **Nota:** Si rischia di potare la soluzione ottima
+
+### 10.4.3 Riduzione dello Spazio degli Stati
+- **State Abstraction:** Mapping _many-to-one_ dagli stati a una rappresentazione astratta (rimuovendo alcuni fluenti) per ottenere soluzioni approssimate
+- **Decomposition:** Divide il problema in parti (sotto-goal). Si basa sulla **Subgoal independence assumption**: il costo totale è approssimato dalla somma dei costi dei sotto-goal risolti indipendentemente
+
+## 10.5 Hierarchical Planning
+Per mitigare l'esplosione delle azioni, si usa l'astrazione gerarchica.
+### 10.5.1 Concetti Chiave
+- **High Level Action (HLA):** Un'azione astratta (es. $Go(Home, Rome)$) che ammette uno o più **refinements**(raffinamenti) in sequenze di azioni
+- **Refinement:** Implementazione di un HLA tramite azioni primitive (o altre HLA).
+- **High Level Plan (HLP):** Una sequenza di HLA
+
+### 10.5.2 Hierarchical Forward Planning
+Algoritmo che parte da un HLP contenente una singola HLA "Act". Usa una ricerca **Breadth-First** per trovare i possibili raffinamenti di ogni HLA nel piano corrente fino a raggiungere azioni primitive
+
+## 10.6 Estensioni: Sensorless e Online Planning
+### 10.6.1 Sensorless Planning (Incertezza)
+- **Belief State:** L'agente mantiene un insieme di stati possibili in cui potrebbe trovarsi
+- **Open-world assumption:** Se un fluente non appare, il suo valore è **sconosciuto** (differenza cruciale rispetto al PDDL classico)
+- **Conditional Effect:** Effetti nella forma "when _condition_: _effect_".
+    - L'effetto si applica solo se la _condition_ (formula logica) è verificata nel belief state corrente
+
+### 10.6.2 Online Planning (Execution Monitoring)
+Utile in ambienti non deterministici. Richiede monitoraggio e replanning.
+Tre approcci di monitoraggio:
+1. **Action monitoring:** Verifica che le precondizioni valgano prima di eseguire l'azione
+2. **Plan monitoring:** Verifica che il piano rimanente possa ancora avere successo
+3. **Goal monitoring:** Controlla se esiste un set di obiettivi migliore da perseguire
+
+## 10.7 Tempo, Schedulazione e Risorse
+Il classical planning decide _cosa_ fare; lo scheduling decide _quando_. Approccio: "Plan first, schedule later".
+### 10.7.1 Rappresentazione e Vincoli
+- **Risorse:** Possono essere consumabili o riutilizzabili. Si usa l'aggregazione numerica (es. $Inspectors(2)$) per ridurre la complessità.
+- **Partial-Order Plan:** Un piano è un grafo diretto che permette azioni in parallelo
+
+### 10.7.2 Scheduling (CPM - Critical Path Method)
+- **Critical Path:** Il percorso nel grafo con la durata totale più lunga. Determina la durata dell'intero piano
+- **Slack (Margine di scorrimento):** Finestra temporale in cui un'azione fuori dal percorso critico può essere eseguita.
+    - Definito da $ES$ (Earliest Start) e $LS$ (Latest Start).
+    - Le azioni sul percorso critico hanno **Slack = 0**
+- **Euristiche:** Minimum slack heuristic (schedula prima le azioni con meno slack)
